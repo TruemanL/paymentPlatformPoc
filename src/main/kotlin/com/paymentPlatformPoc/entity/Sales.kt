@@ -6,7 +6,7 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "sales_tbl")
-class Sales(
+data class Sales(
     @Column(nullable = false)
     val datetime: LocalDateTime,
 
