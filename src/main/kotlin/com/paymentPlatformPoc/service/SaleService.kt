@@ -12,6 +12,7 @@ import com.paymentPlatformPoc.extension.roundRate
 import com.paymentPlatformPoc.extension.roundPoints
 import com.paymentPlatformPoc.extension.roundPrice
 import com.paymentPlatformPoc.repository.SaleRepository
+import com.paymentPlatformPoc.util.DateTimeUtil.toIsoInstantString
 import java.time.LocalDateTime
 
 @Service
@@ -45,7 +46,7 @@ class SaleService(
         val sales = saleRepository.getByDatetimeBetween(startDateTime, endDateTime)
         return sales.map{
             SaleDto(
-                it.datetime.toString(),
+                it.datetime.toIsoInstantString(),
                 it.transactionPrice.roundPrice().toString(),
                 it.points
             )
