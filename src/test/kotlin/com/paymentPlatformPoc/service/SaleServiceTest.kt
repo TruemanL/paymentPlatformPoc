@@ -1,7 +1,7 @@
 package com.paymentPlatformPoc.service
 
 import arrow.core.Validated
-import com.paymentPlatformPoc.dto.Payment
+import com.paymentPlatformPoc.dto.PaymentDto
 import com.paymentPlatformPoc.entity.PaymentMethod
 import org.junit.jupiter.api.Test
 
@@ -64,7 +64,7 @@ class SaleServiceTest @Autowired constructor(
 
         val paymentMethodName = "paymentMethod"
         val priceModifier = BigDecimal(0.97)
-        val testPayment = Payment(dummyPrice, priceModifier, paymentMethodName, dummyDateTime)
+        val testPaymentDto = PaymentDto(dummyPrice, priceModifier, paymentMethodName, dummyDateTime)
 
         val minModifier = BigDecimal(0.98)
         val maxModifier = BigDecimal(1.01)
@@ -72,7 +72,7 @@ class SaleServiceTest @Autowired constructor(
 
         assertEquals(
             Validated.Invalid("Payment requested for paymentMethod and price modifier 0.97 below the minimum acceptable value of 0.98"),
-            sut.getSaleIfValid(testPayment, testPaymentMethod)
+            sut.getSaleIfValid(testPaymentDto, testPaymentMethod)
         )
     }
 
@@ -84,7 +84,7 @@ class SaleServiceTest @Autowired constructor(
 
         val paymentMethodName = "paymentMethod"
         val priceModifier = BigDecimal(1.02)
-        val testPayment = Payment(dummyPrice, priceModifier, paymentMethodName, dummyDateTime)
+        val testPaymentDto = PaymentDto(dummyPrice, priceModifier, paymentMethodName, dummyDateTime)
 
         val minModifier = BigDecimal(0.98)
         val maxModifier = BigDecimal(1.01)
@@ -92,7 +92,7 @@ class SaleServiceTest @Autowired constructor(
 
         assertEquals(
             Validated.Invalid("Payment requested for paymentMethod and price modifier 1.02 above the maximum acceptable value of 1.01"),
-            sut.getSaleIfValid(testPayment, testPaymentMethod)
+            sut.getSaleIfValid(testPaymentDto, testPaymentMethod)
         )
     }
 
@@ -103,14 +103,14 @@ class SaleServiceTest @Autowired constructor(
         val testPrice = BigDecimal(100)
         val testDateTime = LocalDateTime.now()
         val priceModifier = BigDecimal(0.99)
-        val testPayment = Payment(testPrice, priceModifier, paymentMethodName, testDateTime)
+        val testPaymentDto = PaymentDto(testPrice, priceModifier, paymentMethodName, testDateTime)
 
         val minModifier = BigDecimal(0.98)
         val maxModifier = BigDecimal(1.01)
         val testPointRate = BigDecimal(0.02)
         val testPaymentMethod = PaymentMethod(paymentMethodName, minModifier, maxModifier, testPointRate)
 
-        val result = sut.getSaleIfValid(testPayment, testPaymentMethod)
+        val result = sut.getSaleIfValid(testPaymentDto, testPaymentMethod)
 
         result.fold(
             { invalid -> fail("the result was invalid")},
