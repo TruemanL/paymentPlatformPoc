@@ -5,13 +5,13 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Entity
-@Table(name = "sales_tbl")
-data class Sales(
+@Table(name = "sale_tbl")
+data class Sale(
     @Column(nullable = false)
     val datetime: LocalDateTime,
 
-    @Column(nullable = false)
-    val sales: BigDecimal,
+    @Column(nullable = false, name = "transaction_price")
+    val transactionPrice: BigDecimal,
 
     @Column(nullable = false)
     val points: Long,
