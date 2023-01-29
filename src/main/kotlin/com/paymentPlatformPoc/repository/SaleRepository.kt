@@ -10,10 +10,7 @@ import java.time.LocalDateTime
 @Repository
 interface SaleRepository: JpaRepository<Sale, Long> {
 
-    @Query(
-        "select * from sale_tbl s where s.datetime >= :startDateTime and s.datetime <= :endDateTime",
-        nativeQuery = true
-    )
+    @Query("select s from Sale s where s.datetime >= :startDateTime and s.datetime <= :endDateTime")
     fun getByDatetimeBetween(
         @Param("startDateTime") startDateTime: LocalDateTime,
         @Param("endDateTime") endDateTime: LocalDateTime
