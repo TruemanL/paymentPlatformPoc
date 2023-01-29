@@ -1,6 +1,5 @@
 package com.paymentPlatformPoc.repository
 
-import com.paymentPlatformPoc.entity.Sale
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -47,16 +46,18 @@ class SaleRepositoryTest @Autowired constructor(
         val testEndTime = LocalDateTime.of(2023, 1, 4, 0, 0)
         val result = sut.getByDatetimeBetween(testStartTime, testEndTime)
 
-        assertThat(result)
-            .isEqualTo(listOf(
-                Sale(
-                    LocalDateTime.of(2023, 1, 3, 0, 0, 0),
-                    BigDecimal(300).setScale(2), 7, 3
-                ),
-                Sale(
-                    LocalDateTime.of(2023, 1, 4, 0, 0, 0),
-                    BigDecimal(400).setScale(2), 8, 4
-                )
-            ))
+        assertThat(result.size == 2)
+        with(result[0]) {
+            assertThat(datetime).isEqualTo(LocalDateTime.of(2023, 1, 3, 0, 0, 0))
+            assertThat(transactionPrice).isEqualTo(BigDecimal(300).setScale(2))
+            assertThat(points).isEqualTo(7)
+            assertThat(id).isEqualTo(3)
+        }
+        with(result[1]) {
+            assertThat(datetime).isEqualTo(LocalDateTime.of(2023, 1, 4, 0, 0, 0))
+            assertThat(transactionPrice).isEqualTo(BigDecimal(400).setScale(2))
+            assertThat(points).isEqualTo(8)
+            assertThat(id).isEqualTo(4)
+        }
     }
 }
