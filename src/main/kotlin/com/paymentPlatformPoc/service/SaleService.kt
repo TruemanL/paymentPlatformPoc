@@ -40,6 +40,10 @@ class SaleService(
         return Valid(Sale(paymentDto.dateTime, transactionPrice, points))
     }
 
+    fun saveSale(sale: Sale) {
+        saleRepository.save(sale)
+    }
+
     fun getSalesDtoListInRange(startDateTime: LocalDateTime, endDateTime: LocalDateTime): List<SalesDto> {
         val sales = saleRepository.getByDatetimeBetween(startDateTime, endDateTime)
         return sales.groupBy {
