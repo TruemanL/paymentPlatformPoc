@@ -2,18 +2,27 @@ package com.paymentPlatformPoc.service
 
 import arrow.core.Validated
 import com.paymentPlatformPoc.dto.PaymentDto
+import com.paymentPlatformPoc.dto.SalesDto
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.jdbc.core.JdbcTemplate
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @SpringBootTest
 class SaleServiceTest @Autowired constructor(
     val sut: SaleService,
+    val jdbcTemplate: JdbcTemplate
 ) {
+
+    @BeforeEach
+    fun setup() {
+        jdbcTemplate.execute("delete from sale_tbl")
+    }
 
     @Test
     fun `getSaleIfValid_returns expected error if payment method doesn't exist`() {
@@ -77,6 +86,39 @@ class SaleServiceTest @Autowired constructor(
                 assertEquals(BigDecimal(99), sale.transactionPrice)
                 assertEquals(3L, sale.points)
             }}
+        )
+    }
+
+    @Test
+    fun `getSalesDtoListInRange_returns expected SalesDtos`() {
+        jdbcTemplate.update(
+            """
+                insert into sale_tbl
+                (datetime,              transaction_price, points, id) values
+                ('2023-01-01 23:59:59', 100.00,            5,      1),
+                ('2023-01-02 00:00:00', 200.00,            6,      2),
+                ('2023-01-02 00:29:39', 300.00,            7,      3),
+                ('2023-01-02 00:30:00', 400.00,            8,      4),
+                ('2023-01-02 00:30:01', 500.00,            9,      5),
+                ('2023-01-02 00:59:59', 600.00,            10,     6),
+                ('2023-01-02 01:00:00', 700.00,            11,     7),
+                ('2023-01-02 01:59:59', 800.00,            12,     8),
+                ('2023-01-02 02:00:00', 900.00,            13,     9),
+                ('2023-01-03 00:00:00', 1000.00,           14,     10)
+            """.trimIndent()
+        )
+
+        val testStartTime = LocalDateTime.of(2023, 1, 2, 0, 0, 0)
+        val testEndTime = LocalDateTime.of(2023, 1, 2, 1, 59, 59)
+
+        val result = sut.getSalesDtoListInRange(testStartTime, testEndTime)
+
+        assertEquals(
+            listOf(
+                SalesDto("2023-01-02T00:00:00Z", "2000.00", 40L),
+                SalesDto("2023-01-02T01:00:00Z", "1500.00", 23L)
+            ),
+            result
         )
     }
 }

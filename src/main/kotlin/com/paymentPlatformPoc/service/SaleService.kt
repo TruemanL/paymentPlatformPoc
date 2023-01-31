@@ -3,7 +3,7 @@ package com.paymentPlatformPoc.service
 import arrow.core.Validated
 import arrow.core.Validated.*
 import com.paymentPlatformPoc.dto.PaymentDto
-import com.paymentPlatformPoc.dto.SaleDto
+import com.paymentPlatformPoc.dto.SalesDto
 import com.paymentPlatformPoc.entity.Sale
 import com.paymentPlatformPoc.enums.PaymentMethodEnum
 import org.springframework.stereotype.Service
@@ -40,7 +40,7 @@ class SaleService(
         return Valid(Sale(paymentDto.dateTime, transactionPrice, points))
     }
 
-    fun getSaleDtoListInRange(startDateTime: LocalDateTime, endDateTime: LocalDateTime): List<SaleDto> {
+    fun getSalesDtoListInRange(startDateTime: LocalDateTime, endDateTime: LocalDateTime): List<SalesDto> {
         val sales = saleRepository.getByDatetimeBetween(startDateTime, endDateTime)
         return sales.groupBy {
             it.datetime.truncatedTo(ChronoUnit.HOURS)
@@ -53,7 +53,7 @@ class SaleService(
 
             val totalPointsInBucket = it.value.sumOf { sale -> sale.points }
 
-            SaleDto(datetimeBucket, totalSalesInBucket, totalPointsInBucket)
+            SalesDto(datetimeBucket, totalSalesInBucket, totalPointsInBucket)
         }
     }
 }
