@@ -2,11 +2,12 @@ package com.paymentPlatformPoc.service
 
 import arrow.core.Validated
 import arrow.core.Validated.*
+import arrow.core.invalid
+import arrow.core.valid
 import com.paymentPlatformPoc.dto.PaymentDto
 import com.paymentPlatformPoc.dto.SaleDto
-import com.paymentPlatformPoc.entity.PaymentMethod
 import com.paymentPlatformPoc.entity.Sale
-import com.paymentPlatformPoc.repository.PaymentMethodRepository
+import com.paymentPlatformPoc.enums.PaymentMethodEnum
 import org.springframework.stereotype.Service
 import com.paymentPlatformPoc.extension.roundRate
 import com.paymentPlatformPoc.extension.roundPoints
@@ -17,15 +18,17 @@ import java.time.LocalDateTime
 
 @Service
 class SaleService(
-    val paymentMethodRepository: PaymentMethodRepository,
     val saleRepository: SaleRepository
 ) {
-    fun getPaymentMethodIfValid(method: String): Validated<String, PaymentMethod> {
-        return paymentMethodRepository.getByMethod(method)?.let { Valid(it) }
-            ?: Invalid("Payment requested for unrecognized payment method: $method")
-    }
+//    fun getPaymentMethodIfValid(method: String): Validated<String, paymentMethod> {
+//        return paymentMethod.fromMethodName(method)?.valid()
+//            ?: "Payment requested for unrecognized payment method: $method".invalid()
+//    }
 
-    fun getSaleIfValid(paymentDto: PaymentDto, paymentMethod: PaymentMethod): Validated<String, Sale> {
+    fun getSaleIfValid(paymentDto: PaymentDto): Validated<String, Sale> {
+        val paymentMethod: PaymentMethodEnum = PaymentMethodEnum.fromMethodName(paymentDto.paymentMethod)
+            ?: return Invalid("Payment requested for unrecognized payment method: ${paymentDto.paymentMethod}")
+
         if (paymentDto.priceModifier < paymentMethod.minModifier) {
             return Invalid("Payment requested for ${paymentDto.paymentMethod} and " +
                     "price modifier ${paymentDto.priceModifier.roundRate()} below the " +
