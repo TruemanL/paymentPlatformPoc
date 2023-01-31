@@ -40,7 +40,7 @@ class SaleService(
         return Valid(Sale(paymentDto.dateTime, transactionPrice, points))
     }
 
-    fun saveSale(sale: Sale) {
+    fun save(sale: Sale) {
         saleRepository.save(sale)
     }
 
