@@ -20,10 +20,6 @@ import java.time.LocalDateTime
 class SaleService(
     val saleRepository: SaleRepository
 ) {
-//    fun getPaymentMethodIfValid(method: String): Validated<String, paymentMethod> {
-//        return paymentMethod.fromMethodName(method)?.valid()
-//            ?: "Payment requested for unrecognized payment method: $method".invalid()
-//    }
 
     fun getSaleIfValid(paymentDto: PaymentDto): Validated<String, Sale> {
         val paymentMethod: PaymentMethodEnum = PaymentMethodEnum.fromMethodName(paymentDto.paymentMethod)
