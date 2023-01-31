@@ -2,8 +2,6 @@ package com.paymentPlatformPoc.service
 
 import arrow.core.Validated
 import arrow.core.Validated.*
-import arrow.core.invalid
-import arrow.core.valid
 import com.paymentPlatformPoc.dto.PaymentDto
 import com.paymentPlatformPoc.dto.SaleDto
 import com.paymentPlatformPoc.entity.Sale
@@ -14,7 +12,9 @@ import com.paymentPlatformPoc.extension.roundPoints
 import com.paymentPlatformPoc.extension.roundPrice
 import com.paymentPlatformPoc.repository.SaleRepository
 import com.paymentPlatformPoc.util.DateTimeUtil.toIsoInstantString
+import java.math.BigDecimal
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 @Service
 class SaleService(
@@ -40,15 +40,20 @@ class SaleService(
         return Valid(Sale(paymentDto.dateTime, transactionPrice, points))
     }
 
-    //TODO: test after details are confirmed
     fun getSaleDtoListInRange(startDateTime: LocalDateTime, endDateTime: LocalDateTime): List<SaleDto> {
         val sales = saleRepository.getByDatetimeBetween(startDateTime, endDateTime)
-        return sales.map{
-            SaleDto(
-                it.datetime.toIsoInstantString(),
-                it.transactionPrice.roundPrice().toString(),
-                it.points
-            )
+        return sales.groupBy {
+            it.datetime.truncatedTo(ChronoUnit.HOURS)
+        }.map{
+            val datetimeBucket = it.key.toIsoInstantString()
+
+            val totalSalesInBucket = it.value.fold(BigDecimal.ZERO) { acc, sale ->
+                acc + sale.transactionPrice
+            }.roundPrice().toString()
+
+            val totalPointsInBucket = it.value.sumOf { sale -> sale.points }
+
+            SaleDto(datetimeBucket, totalSalesInBucket, totalPointsInBucket)
         }
     }
 }
