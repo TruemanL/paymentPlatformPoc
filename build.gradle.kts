@@ -18,13 +18,17 @@ repositories {
 	mavenCentral()
 }
 
+val grpcKotlinVersion = "1.3.0"
+val grpcVersion = "1.46.0"
+val protobufVersion = "3.21.2"
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("net.devh:grpc-spring-boot-starter:2.14.0.RELEASE")
-	implementation("io.grpc:grpc-kotlin-stub:1.3.0")
-	implementation("io.grpc:grpc-protobuf:1.3.0")
-	implementation("com.google.protobuf:protobuf-kotlin:3.21.12")
+	implementation("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
+	implementation("io.grpc:grpc-protobuf:$grpcVersion")
+	implementation("com.google.protobuf:protobuf-kotlin:$protobufVersion")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
@@ -46,14 +50,14 @@ tasks.withType<Test> {
 
 protobuf {
 	protoc {
-		artifact = "com.google.protobuf:protoc:3.21.12"
+		artifact = "com.google.protobuf:protoc:$protobufVersion"
 	}
 	plugins {
 		id("grpc") {
-			artifact = "io.grpc:protoc-gen-grpc-java:1.3.0"
+			artifact = "io.grpc:protoc-gen-grpc-java:$grpcVersion"
 		}
 		id("grpckt") {
-			artifact = "io.grpc:protoc-gen-grpc-kotlin:1.3.0:jdk8@jar"
+			artifact = "io.grpc:protoc-gen-grpc-kotlin:$grpcKotlinVersion:jdk8@jar"
 		}
 	}
 	generateProtoTasks {
