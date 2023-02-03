@@ -27,7 +27,7 @@ class PaymentAdaptorImpl(val saleService: SaleService): PaymentAdaptorGrpcKt.Pay
             price = BigDecimal(price),
             priceModifier = BigDecimal(priceModifier),
             paymentMethod = paymentMethod,
-            dateTime = DateTimeUtil.getLocalDateTimeFromIsoInstantString(datetime) ?: throw Exception()
+            dateTime = DateTimeUtil.getLocalDateTimeFromIsoInstantString(datetime)
         )
 
     private fun Sale.toPaymentResponse(): PaymentResponse =
@@ -39,9 +39,7 @@ class PaymentAdaptorImpl(val saleService: SaleService): PaymentAdaptorGrpcKt.Pay
 
     override suspend fun getListOfSalesSummary(request: DateRange): ListOfSalesSummary {
         val startDateTime = DateTimeUtil.getLocalDateTimeFromIsoInstantString(request.startDateTime)
-            ?: throw Exception()
         val endDateTime = DateTimeUtil.getLocalDateTimeFromIsoInstantString(request.endDateTime)
-            ?: throw Exception()
         val salesSummary = saleService.getSalesDtoListInRange(startDateTime, endDateTime).map { it.toSalesSummary() }
         return ListOfSalesSummary.newBuilder().addAllSales(salesSummary).build()
     }

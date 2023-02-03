@@ -9,8 +9,11 @@ import java.time.LocalDateTime
 class DateTimeUtilTest {
 
     @Test
-    fun `getLocalDateTimeFromIsoInstantString_returns null when input is not a valid IsoInstant datetime`() {
-        assertNull(DateTimeUtil.getLocalDateTimeFromIsoInstantString("2022-09-01T00:00:00"))
+    fun `getLocalDateTimeFromIsoInstantString_throws IllegalArgumentException when input is not a valid IsoInstant datetime`() {
+        val thrown = assertThrowsExactly(IllegalArgumentException::class.java) {
+            DateTimeUtil.getLocalDateTimeFromIsoInstantString("2022-09-01T00:00:00")
+        }
+        assertEquals("Illegal datetime value of 2022-09-01T00:00:00", thrown.message)
     }
 
     @Test
