@@ -12,14 +12,9 @@ import java.math.BigDecimal
 @GrpcService
 class PaymentAdaptorImpl(val saleService: SaleService): PaymentAdaptorGrpcKt.PaymentAdaptorCoroutineImplBase() {
     override suspend fun makePayment(request: PaymentRequest): PaymentResponse {
-        return saleService.getSaleIfValid(request.toPaymentDto())
-            .fold(
-                { errorMessage -> throw Exception(errorMessage) },
-                { sale -> {
-                    saleService.save(sale)
-                    sale.toPaymentResponse()
-                } }
-            ).invoke()
+        val sale = saleService.getSale(request.toPaymentDto())
+        saleService.save(sale)
+        return sale.toPaymentResponse()
     }
 
     private fun PaymentRequest.toPaymentDto(): PaymentDto =

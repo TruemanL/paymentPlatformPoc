@@ -1,11 +1,10 @@
 package com.paymentPlatformPoc.service
 
-import arrow.core.Validated
-import arrow.core.Validated.*
 import com.paymentPlatformPoc.dto.PaymentDto
 import com.paymentPlatformPoc.dto.SalesDto
 import com.paymentPlatformPoc.entity.Sale
 import com.paymentPlatformPoc.enums.PaymentMethodEnum
+import com.paymentPlatformPoc.exception.InputOutOfRangeException
 import org.springframework.stereotype.Service
 import com.paymentPlatformPoc.extension.roundRate
 import com.paymentPlatformPoc.extension.roundPoints
@@ -21,23 +20,23 @@ class SaleService(
     val saleRepository: SaleRepository
 ) {
 
-    fun getSaleIfValid(paymentDto: PaymentDto): Validated<String, Sale> {
+    fun getSale(paymentDto: PaymentDto): Sale {
         val paymentMethod: PaymentMethodEnum = PaymentMethodEnum.fromMethodName(paymentDto.paymentMethod)
-            ?: return Invalid("Payment requested for unrecognized payment method: ${paymentDto.paymentMethod}")
+            ?: throw IllegalArgumentException("Payment requested for unrecognized payment method: ${paymentDto.paymentMethod}")
 
         if (paymentDto.priceModifier < paymentMethod.minModifier) {
-            return Invalid("Payment requested for ${paymentDto.paymentMethod} and " +
+            throw InputOutOfRangeException("Payment requested for ${paymentDto.paymentMethod} and " +
                     "price modifier ${paymentDto.priceModifier.roundRate()} below the " +
                     "minimum acceptable value of ${paymentMethod.minModifier.roundRate()}")
         }
         if (paymentDto.priceModifier > paymentMethod.maxModifier) {
-            return Invalid("Payment requested for ${paymentDto.paymentMethod} and " +
+            throw InputOutOfRangeException("Payment requested for ${paymentDto.paymentMethod} and " +
                     "price modifier ${paymentDto.priceModifier.roundRate()} above the " +
                     "maximum acceptable value of ${paymentMethod.maxModifier.roundRate()}")
         }
         val transactionPrice = paymentDto.price.multiply(paymentDto.priceModifier).roundPrice()
         val points = paymentDto.price.multiply(paymentMethod.pointRate).roundPoints()
-        return Valid(Sale(paymentDto.dateTime, transactionPrice, points))
+        return Sale(paymentDto.dateTime, transactionPrice, points)
     }
 
     fun save(sale: Sale) {
