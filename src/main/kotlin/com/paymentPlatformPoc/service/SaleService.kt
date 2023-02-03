@@ -44,6 +44,8 @@ class SaleService(
     }
 
     fun getSalesDtoListInRange(startDateTime: LocalDateTime, endDateTime: LocalDateTime): List<SalesDto> {
+        //TODO: validate startDateTime < endDateTime
+        //TODO: keep original data types (move type conversion to adapter)
         val sales = saleRepository.getByDatetimeBetween(startDateTime, endDateTime)
         return sales.groupBy {
             it.datetime.truncatedTo(ChronoUnit.HOURS)
