@@ -2,7 +2,7 @@ import com.google.protobuf.gradle.id
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "3.0.2"
+	id("org.springframework.boot") version "2.6.13"
 	id("io.spring.dependency-management") version "1.1.0"
 	id("com.google.protobuf") version "0.9.2"
 	kotlin("jvm") version "1.7.22"
@@ -19,12 +19,12 @@ repositories {
 }
 
 val grpcKotlinVersion = "1.3.0"
-val grpcVersion = "1.46.0"
+val grpcVersion = "1.51.0"
 val protobufVersion = "3.21.2"
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter")
 	implementation("net.devh:grpc-spring-boot-starter:2.14.0.RELEASE")
 	implementation("io.grpc:grpc-kotlin-stub:$grpcKotlinVersion")
 	implementation("io.grpc:grpc-protobuf:$grpcVersion")

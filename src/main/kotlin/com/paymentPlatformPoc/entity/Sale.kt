@@ -1,6 +1,6 @@
 package com.paymentPlatformPoc.entity
 
-import jakarta.persistence.*
+import javax.persistence.*
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
