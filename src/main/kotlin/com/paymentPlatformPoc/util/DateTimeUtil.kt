@@ -8,12 +8,12 @@ import java.time.format.DateTimeFormatter
 
 object DateTimeUtil {
 
-    fun getLocalDateTimeFromIsoInstantString(input: String): LocalDateTime? {
+    fun getLocalDateTimeFromIsoInstantString(input: String): LocalDateTime {
         return try {
             val dateInstant = Instant.from(DateTimeFormatter.ISO_INSTANT.parse(input))
             LocalDateTime.ofInstant(dateInstant, ZoneId.of(ZoneOffset.UTC.id))
         } catch (e: Exception) {
-            null
+            throw IllegalArgumentException("Illegal datetime value of $input")
         }
     }
 

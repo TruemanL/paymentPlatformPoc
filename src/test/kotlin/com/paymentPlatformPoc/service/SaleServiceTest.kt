@@ -1,8 +1,8 @@
 package com.paymentPlatformPoc.service
 
-import arrow.core.Validated
 import com.paymentPlatformPoc.dto.PaymentDto
 import com.paymentPlatformPoc.dto.SalesDto
+import com.paymentPlatformPoc.exception.InputOutOfRangeException
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
@@ -32,10 +32,10 @@ class SaleServiceTest @Autowired constructor(
         val invalidPaymentMethod = "Invalid Method"
         val testPaymentDto = PaymentDto(dummyPrice, dummyPriceModifier, invalidPaymentMethod, dummyDateTime)
 
-        assertEquals(
-            Validated.Invalid("Payment requested for unrecognized payment method: Invalid Method"),
-            sut.getSaleIfValid(testPaymentDto)
-        )
+        val thrown = assertThrowsExactly(IllegalArgumentException::class.java) {
+            sut.getSale(testPaymentDto)
+        }
+        assertEquals("Payment requested for unrecognized payment method: Invalid Method", thrown.message)
     }
 
     @Test
@@ -47,10 +47,10 @@ class SaleServiceTest @Autowired constructor(
         val priceModifier = BigDecimal(0.89)
         val testPaymentDto = PaymentDto(dummyPrice, priceModifier, paymentMethodName, dummyDateTime)
 
-        assertEquals(
-            Validated.Invalid("Payment requested for CASH and price modifier 0.89 below the minimum acceptable value of 0.90"),
-            sut.getSaleIfValid(testPaymentDto)
-        )
+        val thrown = assertThrowsExactly(InputOutOfRangeException::class.java) {
+            sut.getSale(testPaymentDto)
+        }
+        assertEquals("Payment requested for CASH and price modifier 0.89 below the minimum acceptable value of 0.90", thrown.message)
     }
 
     @Test
@@ -62,10 +62,10 @@ class SaleServiceTest @Autowired constructor(
         val priceModifier = BigDecimal(1.03)
         val testPaymentDto = PaymentDto(dummyPrice, priceModifier, paymentMethodName, dummyDateTime)
 
-        assertEquals(
-            Validated.Invalid("Payment requested for CASH_ON_DELIVERY and price modifier 1.03 above the maximum acceptable value of 1.02"),
-            sut.getSaleIfValid(testPaymentDto)
-        )
+        val thrown = assertThrowsExactly(InputOutOfRangeException::class.java) {
+            sut.getSale(testPaymentDto)
+        }
+        assertEquals("Payment requested for CASH_ON_DELIVERY and price modifier 1.03 above the maximum acceptable value of 1.02", thrown.message)
     }
 
     @Test
@@ -77,16 +77,21 @@ class SaleServiceTest @Autowired constructor(
         val priceModifier = BigDecimal(0.99)
         val testPaymentDto = PaymentDto(testPrice, priceModifier, paymentMethodName, testDateTime)
 
-        val result = sut.getSaleIfValid(testPaymentDto)
+        val result = sut.getSale(testPaymentDto)
+        assertEquals(testDateTime, result.datetime)
+        assertEquals(BigDecimal(99).setScale(2), result.transactionPrice)
+        assertEquals(3L, result.points)
+    }
 
-        result.fold(
-            { invalid -> fail("the result was invalid")},
-            { sale -> {
-                assertEquals(testDateTime, sale.datetime)
-                assertEquals(BigDecimal(99), sale.transactionPrice)
-                assertEquals(3L, sale.points)
-            }}
-        )
+    @Test
+    fun `getSalesDtoListInRange_throws IllegalArgumentException if startDatetime is after endDateTime`() {
+        val testStartTime = LocalDateTime.of(2023, 1, 2, 1, 0, 0)
+        val testEndTime = LocalDateTime.of(2023, 1, 2, 0, 59, 59)
+
+        val thrown = assertThrowsExactly(IllegalArgumentException::class.java) {
+            sut.getSalesDtoListInRange(testStartTime, testEndTime)
+        }
+        assertEquals("startDateTime 2023-01-02T01:00:00Z is after endDateTime 2023-01-02T00:59:59Z", thrown.message)
     }
 
     @Test
@@ -115,8 +120,12 @@ class SaleServiceTest @Autowired constructor(
 
         assertEquals(
             listOf(
-                SalesDto("2023-01-02T00:00:00Z", "2000.00", 40L),
-                SalesDto("2023-01-02T01:00:00Z", "1500.00", 23L)
+                SalesDto(LocalDateTime.of(2023, 1, 2, 0, 0, 0),
+                    BigDecimal(2000).setScale(2),
+                    40L),
+                SalesDto(LocalDateTime.of(2023, 1, 2, 1, 0, 0),
+                    BigDecimal(1500).setScale(2),
+                    23L)
             ),
             result
         )
