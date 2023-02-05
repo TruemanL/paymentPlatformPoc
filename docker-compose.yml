@@ -1,0 +1,19 @@
+version: '3.1'
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_USER=postgresuser
+      - POSTGRES_PASSWORD=postgrespw
+      - POSTGRES_DB=testdb
+    ports:
+      - 5432:5432
+  payment_platform:
+      build: .
+      image: payment_platform
+      ports:
+        - "9090:9090"
+      environment:
+        - spring.datasource.url=jdbc:postgresql://host.docker.internal:5432/testdb
+      depends_on:
+        - postgres
