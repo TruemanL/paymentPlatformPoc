@@ -3,9 +3,11 @@ package com.paymentPlatformPoc.adaptor
 import com.paymentPlatformPoc.dto.PaymentDto
 import com.paymentPlatformPoc.dto.SalesDto
 import com.paymentPlatformPoc.entity.Sale
+import com.paymentPlatformPoc.extension.roundPrice
 import com.paymentPlatformPoc.grpc.adaptor.*
 import com.paymentPlatformPoc.service.SaleService
 import com.paymentPlatformPoc.util.DateTimeUtil
+import com.paymentPlatformPoc.util.DateTimeUtil.toIsoInstantString
 import net.devh.boot.grpc.server.service.GrpcService
 import java.math.BigDecimal
 
@@ -41,8 +43,8 @@ class PaymentAdaptorImpl(val saleService: SaleService): PaymentAdaptorGrpcKt.Pay
 
     private fun SalesDto.toSalesSummary(): SalesSummary =
         SalesSummary.newBuilder()
-            .setDatetime(datetime)
-            .setSales(sales)
+            .setDatetime(datetime.toIsoInstantString())
+            .setSales(sales.roundPrice().toString())
             .setPoints(points)
             .build()
 }

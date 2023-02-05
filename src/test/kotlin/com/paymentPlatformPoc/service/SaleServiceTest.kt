@@ -109,8 +109,12 @@ class SaleServiceTest @Autowired constructor(
 
         assertEquals(
             listOf(
-                SalesDto("2023-01-02T00:00:00Z", "2000.00", 40L),
-                SalesDto("2023-01-02T01:00:00Z", "1500.00", 23L)
+                SalesDto(LocalDateTime.of(2023, 1, 2, 0, 0, 0),
+                    BigDecimal(2000).setScale(2),
+                    40L),
+                SalesDto(LocalDateTime.of(2023, 1, 2, 1, 0, 0),
+                    BigDecimal(1500).setScale(2),
+                    23L)
             ),
             result
         )

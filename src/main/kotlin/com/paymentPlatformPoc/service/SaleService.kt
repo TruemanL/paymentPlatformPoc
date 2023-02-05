@@ -10,7 +10,6 @@ import com.paymentPlatformPoc.extension.roundRate
 import com.paymentPlatformPoc.extension.roundPoints
 import com.paymentPlatformPoc.extension.roundPrice
 import com.paymentPlatformPoc.repository.SaleRepository
-import com.paymentPlatformPoc.util.DateTimeUtil.toIsoInstantString
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -50,11 +49,11 @@ class SaleService(
         return sales.groupBy {
             it.datetime.truncatedTo(ChronoUnit.HOURS)
         }.map{
-            val datetimeBucket = it.key.toIsoInstantString()
+            val datetimeBucket = it.key
 
             val totalSalesInBucket = it.value.fold(BigDecimal.ZERO) { acc, sale ->
                 acc + sale.transactionPrice
-            }.roundPrice().toString()
+            }
 
             val totalPointsInBucket = it.value.sumOf { sale -> sale.points }
 
