@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.jdbc.core.JdbcTemplate
 import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDateTime
 
 @SpringBootTest
@@ -72,14 +73,14 @@ class SaleServiceTest @Autowired constructor(
     fun `getSaleIfValid_returns expected Sale if payment is valid`() {
         val paymentMethodName = "VISA" // minModifier = 0.95, maxModifier = 1, pointRate = 0.03
 
-        val testPrice = BigDecimal(100)
+        val testPrice = BigDecimal(110)
         val testDateTime = LocalDateTime.now()
         val priceModifier = BigDecimal(0.99)
         val testPaymentDto = PaymentDto(testPrice, priceModifier, paymentMethodName, testDateTime)
 
         val result = sut.getSale(testPaymentDto)
         assertEquals(testDateTime, result.datetime)
-        assertEquals(BigDecimal(99).setScale(2), result.transactionPrice)
+        assertEquals(BigDecimal(108.90).setScale(2, RoundingMode.HALF_UP), result.transactionPrice)
         assertEquals(3L, result.points)
     }
 

@@ -16,5 +16,5 @@ fun BigDecimal.roundRate(): BigDecimal {
 }
 
 fun BigDecimal.round(scale: Int): BigDecimal {
-    return this.setScale(2, RoundingMode.HALF_UP)
+    return this.setScale(scale, RoundingMode.HALF_UP)
 }
