@@ -10,6 +10,7 @@ import com.paymentPlatformPoc.extension.roundRate
 import com.paymentPlatformPoc.extension.roundPoints
 import com.paymentPlatformPoc.extension.roundPrice
 import com.paymentPlatformPoc.repository.SaleRepository
+import com.paymentPlatformPoc.util.DateTimeUtil.toIsoInstantString
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
@@ -43,8 +44,8 @@ class SaleService(
     }
 
     fun getSalesDtoListInRange(startDateTime: LocalDateTime, endDateTime: LocalDateTime): List<SalesDto> {
-        //TODO: validate startDateTime < endDateTime
-        //TODO: keep original data types (move type conversion to adapter)
+        if (startDateTime.isAfter(endDateTime))
+            throw IllegalArgumentException("startDateTime ${startDateTime.toIsoInstantString()} is after endDateTime ${endDateTime.toIsoInstantString()}")
         val sales = saleRepository.getByDatetimeBetween(startDateTime, endDateTime)
         return sales.groupBy {
             it.datetime.truncatedTo(ChronoUnit.HOURS)

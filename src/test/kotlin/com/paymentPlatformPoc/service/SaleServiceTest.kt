@@ -84,6 +84,17 @@ class SaleServiceTest @Autowired constructor(
     }
 
     @Test
+    fun `getSalesDtoListInRange_throws IllegalArgumentException if startDatetime is after endDateTime`() {
+        val testStartTime = LocalDateTime.of(2023, 1, 2, 1, 0, 0)
+        val testEndTime = LocalDateTime.of(2023, 1, 2, 0, 59, 59)
+
+        val thrown = assertThrowsExactly(IllegalArgumentException::class.java) {
+            sut.getSalesDtoListInRange(testStartTime, testEndTime)
+        }
+        assertEquals("startDateTime 2023-01-02T01:00:00Z is after endDateTime 2023-01-02T00:59:59Z", thrown.message)
+    }
+
+    @Test
     fun `getSalesDtoListInRange_returns expected SalesDtos`() {
         jdbcTemplate.update(
             """
