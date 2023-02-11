@@ -18,6 +18,6 @@ For 2. Use docker just for the postgres db container and IntelliJ to run/debug t
 Once the application is running, you can test it using grpcurl (https://yidongnan.github.io/grpc-spring-boot-starter/en/server/testing.html#grpcurl)
 or use a grpcgui tool like https://github.com/gusaul/grpcox
 
-Note that if you're running the application from IntelliJ, the access host/port will be localhost:9090
+Note that if you're running the grpcgui tool from IntelliJ, the access host/port for this application will be localhost:9090
 
-whereas if you're running the application from docker, the access host/port will be host.docker.internal:9090
+whereas if you're running the grpcgui tool from docker, the access host/port for this application will be host.docker.internal:9090
