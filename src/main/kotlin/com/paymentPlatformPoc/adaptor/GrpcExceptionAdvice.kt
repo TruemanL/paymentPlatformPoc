@@ -16,4 +16,9 @@ class GrpcExceptionAdvice {
     fun handleOutOfRangeArgument(e: InputOutOfRangeException): Status {
         return Status.OUT_OF_RANGE.withDescription(e.message)
     }
+
+    @GrpcExceptionHandler
+    fun handleUnexpectedException(e: Exception): Status {
+        return Status.UNKNOWN.withDescription(e.message)
+    }
 }
